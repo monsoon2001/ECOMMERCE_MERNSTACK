@@ -8,6 +8,36 @@ import { toast } from "react-hot-toast";
 import Layout from "./../components/Layout/Layout";
 import { AiOutlineReload } from "react-icons/ai";
 import "../styles/Homepage.css";
+import { Carousel } from 'react-bootstrap';
+
+const MyCarousel = () => {
+  return (
+    <Carousel interval={3000} pause={false}>
+      <Carousel.Item>
+        <img className="d-block w-100" src="/images/gym1.jpg" alt="First slide" />
+        <Carousel.Caption>
+          <h3>First Slide Caption</h3>
+          <p>Some description for the first slide.</p>
+        </Carousel.Caption>
+      </Carousel.Item>
+      <Carousel.Item>
+        <img className="d-block w-100" src="/images/gym2.jpg" alt="Second slide" />
+        <Carousel.Caption>
+          <h3>Second Slide Caption</h3>
+          <p>Some description for the second slide.</p>
+        </Carousel.Caption>
+      </Carousel.Item>
+      <Carousel.Item>
+        <img className="d-block w-100" src="/images/gym3.jpg" alt="Third slide" />
+        <Carousel.Caption>
+          <h3>Third Slide Caption</h3>
+          <p>Some description for the third slide.</p>
+        </Carousel.Caption>
+      </Carousel.Item>
+    </Carousel>
+  );
+};
+
 
 
 const HomePage = () => {
@@ -141,9 +171,12 @@ const HomePage = () => {
     }
   };
 
+  
+
 
   return (
     <Layout title={"Muscle Mart"}>
+      <MyCarousel />
       <div className="container-fluid row mt-3 home-page">
         <div className="col-md-3 filters">
           <h4 className="text-center">Filter By Category</h4>
@@ -192,9 +225,9 @@ const HomePage = () => {
                   <div className="card-name-price">
                     <h5 className="card-title">{p.name}</h5>
                     <h5 className="card-title card-price">
-                      {p.price.toLocaleString("en-US", {
+                      {p.price.toLocaleString("ne-NP", {
                         style: "currency",
-                        currency: "USD",
+                        currency: "NPR",
                       })}
                     </h5>
                   </div>

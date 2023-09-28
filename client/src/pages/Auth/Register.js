@@ -4,20 +4,110 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import "../../styles/AuthStyles.css";
+
+
+// const Register = () => {
+//   const [name, setName] = useState("");
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [phone, setPhone] = useState("");
+//   const [address, setAddress] = useState("");
+//   const [answer, setAnswer] = useState("");
+//   const navigate = useNavigate();
+
+//   // form function
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const res = await axios.post("/api/v1/auth/register", {
+//         name,
+//         email,
+//         password,
+//         phone,
+//         address,
+//         answer,
+//       });
+//       if (res && res.data.success) {
+//         toast.success(res.data && res.data.message);
+//         navigate("/login");
+//       } else {
+//         toast.error(res.data.message);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//       toast.error("Something went wrong");
+//     }
+//   };
+
 const Register = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [answer, setAnswer] = useState('');
   const navigate = useNavigate();
 
-  // form function
+  const validateFields = () => {
+    // Regular expressions for validation
+    const nameRegex = /^[A-Za-z\s]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^.{8,}$/;
+    const phoneRegex = /^\d{10}$/;
+    const answerRegex = /^[A-Za-z\s]+$/;
+
+    // Initialize error messages
+    const errors = {};
+
+    if (!name.match(nameRegex)) {
+      errors.name = 'Name must contain only alphabets';
+    }
+
+    if (!email.match(emailRegex)) {
+      errors.email = 'Invalid email format';
+    }
+
+    if (!password.match(passwordRegex)) {
+      errors.password = 'Password must be at least 8 characters long';
+    }
+
+    if (!phone.match(phoneRegex)) {
+      errors.phone = 'Phone number must be 10 digits';
+    }
+
+    if (!answer.match(answerRegex)) {
+      errors.answer = 'Answer must contain only alphabets';
+    }
+
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validateFields();
+
+    if (Object.keys(validationErrors).length > 0) {
+      // Display specific error messages for each field
+      if (validationErrors.name) {
+        toast.error(validationErrors.name);
+      }
+      if (validationErrors.email) {
+        toast.error(validationErrors.email);
+      }
+      if (validationErrors.password) {
+        toast.error(validationErrors.password);
+      }
+      if (validationErrors.phone) {
+        toast.error(validationErrors.phone);
+      }
+      if (validationErrors.answer) {
+        toast.error(validationErrors.answer);
+      }
+      return;
+    }
+
     try {
-      const res = await axios.post("/api/v1/auth/register", {
+      const res = await axios.post('/api/v1/auth/register', {
         name,
         email,
         password,
@@ -27,13 +117,13 @@ const Register = () => {
       });
       if (res && res.data.success) {
         toast.success(res.data && res.data.message);
-        navigate("/login");
+        navigate('/login');
       } else {
         toast.error(res.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong");
+      toast.error('Something went wrong');
     }
   };
 
