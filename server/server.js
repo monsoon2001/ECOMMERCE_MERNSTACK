@@ -8,7 +8,10 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import cors from "cors";
 import bodyParser from "body-parser";
-import request from "request";
+
+import axios from "axios";
+
+import Product from "./models/productModel.js";
 
 
 // echo "# mern_stack" >> README.md
@@ -39,15 +42,12 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/product", productRoutes);
 
-//rest api
-app.get("/", (req, res) => {
-  res.send("<h1>Welcome to ecommerce app</h1>");
+app.get("/name", (req, res) => {
+  res.send("This is the root route.");
 });
 
 
 
-
-import axios from "axios";
 
 // app.post("/api/initiate-payment", async (req, res) => {
 //   try {
@@ -74,6 +74,69 @@ import axios from "axios";
 //   // const paymentData = req.body;
 //   // console.log(JSON.stringify(paymentData));
 // });
+
+// Endpoint to check available quantity of a product
+app.get("/api/v1/product/checkQuantity/:productId", async (req, res) => {
+  const { productId } = req.params;
+
+  try {
+    // Find the product by ID
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    console.log(product.name);
+
+    res.json({ availableQuantity: product.quantity });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+
+  console.log(productId);
+
+  // Find the product by productId (you might use a database query here)
+  // const product = Product.find((p) => p._id === productId);
+
+  // if(!product) {
+  //   return res.status(404).json({ message: "Product not found" });
+  // }
+
+  // res.json({ availableQuantity: product.quantity });
+  
+});
+
+// API endpoint for updating product quantity
+app.put('/api/v1/product/updateQuantity/:productId', async (req, res) => {
+  const productId = req.params.productId;
+  const itemQuantity = req.body.itemQuantity;
+  console.log(productId, itemQuantity);
+
+  try {
+    // Find the product by ID
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Update the quantity of the product
+    const newQuantity = product.quantity - itemQuantity;
+    product.quantity = newQuantity;
+
+    // Save the updated product
+    await product.save();
+
+    return res.status(200).json({ message: 'Product quantity updated successfully' });
+  } catch (error) {
+    console.error('Error updating product quantity:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 app.post("/api/initiate-payment", async (req, res) => {
   try {

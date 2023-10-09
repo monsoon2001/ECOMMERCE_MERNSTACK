@@ -62,6 +62,20 @@ const UpdateProduct = () => {
   //create product function
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (!/^[A-Za-z\s]+$/.test(name)) {
+      toast.error("Name must contain only alphabets");
+      return;
+    }
+  
+    if (parseFloat(price) < 0 || isNaN(parseFloat(price))) {
+      toast.error("Price must be a non-negative number");
+      return;
+    }
+  
+    if (parseInt(quantity) < 0 || isNaN(parseInt(quantity))) {
+      toast.error("Quantity must be a non-negative integer");
+      return;
+    }
     try {
       const productData = new FormData();
       productData.append("name", name);
@@ -134,7 +148,7 @@ const UpdateProduct = () => {
                   <input
                     type="file"
                     name="photo"
-                    accept="image/*"
+                    accept="image/png, image/jpeg*"
                     onChange={(e) => setPhoto(e.target.files[0])}
                     hidden
                   />

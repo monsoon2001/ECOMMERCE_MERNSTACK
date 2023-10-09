@@ -52,20 +52,23 @@
 ==========footer============= */
 
 .footer {
-  color: white;
+  color: black;
   padding: 25px;
-  background: #000000; /* fallback for old browsers */
+  background: #5b5555; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
-    #434343,
-    #000000
+    #dcdada,
+    #5b5555
   ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #434343, #000000);
+  background: linear-gradient(to right, #dad7d7, #c7c3c3);
+  box-shadow: 0 8px 6px -6px gray;
+  --webkit-box-shadow: 0 8px 6px -6px rgb(47, 44, 44);
+  border-bottom: solid gray !important;
 }
 
 .footer a {
   text-decoration: none;
-  color: white;
+  color: black;
   padding: 10px;
 }
 

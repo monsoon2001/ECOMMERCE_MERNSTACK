@@ -43,9 +43,9 @@ const CategoryProduct = () => {
                     <div className="card-name-price">
                       <h5 className="card-title">{p.name}</h5>
                       <h5 className="card-title card-price">
-                        {p.price.toLocaleString("en-US", {
+                        {p.price.toLocaleString("ne-NP", {
                           style: "currency",
-                          currency: "USD",
+                          currency: "NPR",
                         })}
                       </h5>
                     </div>

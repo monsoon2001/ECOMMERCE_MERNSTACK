@@ -16,22 +16,22 @@ const MyCarousel = () => {
       <Carousel.Item>
         <img className="d-block w-100" src="/images/gym1.jpg" alt="First slide" />
         <Carousel.Caption>
-          <h3>First Slide Caption</h3>
-          <p>Some description for the first slide.</p>
+        <h3>Welcome to Muscle Mart</h3>
+        <p>Discover a wide range of fitness equipment and accessories.</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
         <img className="d-block w-100" src="/images/gym2.jpg" alt="Second slide" />
         <Carousel.Caption>
-          <h3>Second Slide Caption</h3>
-          <p>Some description for the second slide.</p>
+        <h3>Get Fit, Stay Healthy</h3>
+        <p>Our high-quality products are designed to help you achieve your fitness goals.</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
         <img className="d-block w-100" src="/images/gym3.jpg" alt="Third slide" />
         <Carousel.Caption>
-          <h3>Third Slide Caption</h3>
-          <p>Some description for the third slide.</p>
+        <h3>Shop with Confidence</h3>
+        <p>Experience excellent customer service and fast delivery with Muscle Mart.</p>
         </Carousel.Caption>
       </Carousel.Item>
     </Carousel>
@@ -235,11 +235,20 @@ const HomePage = () => {
                     {p.description.substring(0, 60)}...
                   </p>
                   <div className="card-name-price">
-                    <button
+                    {/* <button
                       className="btn btn-outline-primary"
                       onClick={() => addToCart(p)}
                     >
                       ADD TO CART
+                    </button> */}
+                    <button
+                      className={`btn ${
+                        p.quantity <= 0 ? 'btn-outline-danger' : 'btn-outline-primary'
+                      }`}
+                      onClick={() => addToCart(p)}
+                      disabled={p.quantity <= 0}
+                    >
+                      {p.quantity <= 0 ? 'Out of Stock' : 'ADD TO CART'}
                     </button>
                   </div>
                 </div>

@@ -38,6 +38,21 @@ const CreateProduct = () => {
   //create product function
   const handleCreate = async (e) => {
     e.preventDefault();
+    // Validation
+  if (!/^[A-Za-z\s]+$/.test(name)) {
+    toast.error("Name must contain only alphabets");
+    return;
+  }
+
+  if (parseFloat(price) < 0 || isNaN(parseFloat(price))) {
+    toast.error("Price must be a non-negative number");
+    return;
+  }
+
+  if (parseInt(quantity) < 0 || isNaN(parseInt(quantity))) {
+    toast.error("Quantity must be a non-negative integer");
+    return;
+  }
     try {
       const productData = new FormData();
       productData.append("name", name);
@@ -89,17 +104,17 @@ const CreateProduct = () => {
                 ))}
               </Select>
               <div className="mb-3">
-                <label className="btn btn-outline-secondary col-md-12">
-                  {photo ? photo.name : "Upload Photo"}
-                  <input
-                    type="file"
-                    name="photo"
-                    accept="image/*"
-                    onChange={(e) => setPhoto(e.target.files[0])}
-                    hidden
-                  />
-                </label>
-              </div>
+              <label className="btn btn-outline-secondary col-md-12">
+                {photo ? photo.name : "Upload Photo (PNG/JPG)"}
+                <input
+                  type="file"
+                  name="photo"
+                  accept="image/png, image/jpeg"  /* Only accept PNG and JPEG files */
+                  onChange={(e) => setPhoto(e.target.files[0])}
+                  hidden
+                />
+              </label>
+            </div>
               <div className="mb-3">
                 {photo && (
                   <div className="text-center">

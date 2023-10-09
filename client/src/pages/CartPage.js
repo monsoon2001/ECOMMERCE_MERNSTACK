@@ -88,25 +88,7 @@ const CartPage = () => {
     getToken();
   }, [auth?.token]);
 
-  //handle payments
-  const handlePayment = async () => {
-    try {
-      setLoading(true);
-      const { nonce } = await instance.requestPaymentMethod();
-      const { data } = await axios.post("/api/v1/product/braintree/payment", {
-        nonce,
-        cart,
-      });
-      setLoading(false);
-      localStorage.removeItem("cart");
-      setCart([]);
-      navigate("/dashboard/user/orders");
-      toast.success("Payment Completed Successfully ");
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
+
 
   const khaltiPayment = async () => {
     try {
@@ -116,7 +98,7 @@ const CartPage = () => {
       }, 0);
 
       const paymentData = {
-        return_url: "http://localhost:3000/",
+        return_url: "http://localhost:3000/success",
         website_url: "http://localhost:3000",
         amount: totalAmount * 100, // Amount should be in paisa
         purchase_order_id: "your_order_id", // Replace with a unique order ID
@@ -150,11 +132,127 @@ const CartPage = () => {
       }
 
       setLoading(false);
+      localStorage.removeItem("cart");
+      setCart([]);
+      navigate("/dashboard/user/orders");
+      toast.success("Payment Completed Successfully ");
     } catch (error) {
       console.error("Error initiating payment:", error);
       setLoading(false);
     }
   };
+
+    //handle payments
+    // const handlePayment = async () => {
+    //   try {
+    //     setLoading(true);
+    //     const { nonce } = await instance.requestPaymentMethod();
+    //     const { data } = await axios.post("/api/v1/product/braintree/payment", {
+    //       nonce,
+    //       cart,
+    //     });
+    //     setLoading(false);
+
+    //     for (const item of cart) {
+    //       // Make an API request to update the product quantity
+    //       // await axios.put(`/api/v1/product/updateQuantity/${item._id}`, {
+    //       //   itemQuantity: item.quantity,
+    //       // });
+    //       const itemQuantity = item.quantity;
+    //       fetch(`/api/v1/product/updateQuantity/${item._id}`, {
+    //         method: 'PUT',
+    //         headers: {
+    //           'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify({itemQuantity}), // Send only the new quantity as a number
+    //       })
+    //     }
+        
+    //     localStorage.removeItem("cart");
+    //     setCart([]);
+    //     navigate("/dashboard/user/orders");
+    //     toast.success("Payment Completed Successfully ");
+    //   } catch (error) {
+    //     console.log(error);
+    //     setLoading(false);
+    //   }
+    // };
+
+    //handle payments
+const handlePayment = async () => {
+  try {
+    setLoading(true);
+    // Check if the quantities in the cart exceed the available quantities in the database
+    const insufficientQuantityItems = [];
+    for (const item of cart) {
+      const response = await fetch(`/api/v1/product/checkQuantity/${item._id}`);
+      const { availableQuantity } = await response.json();
+      console.log(availableQuantity);
+      if (item.quantity > availableQuantity) {
+        insufficientQuantityItems.push(item.name); // Add the item name to the list
+      }
+    }
+
+    console.log(insufficientQuantityItems.length);
+
+    if (insufficientQuantityItems.length > 0) {
+      // Display an error toast and stop payment if any item has insufficient quantity
+      toast.error(
+        `Sorry, the following items are out of stock or have insufficient quantity: ${insufficientQuantityItems.join(
+          ", "
+        )}`
+      );
+    } else {
+    const { nonce } = await instance.requestPaymentMethod();
+    const productQuantities = [];
+
+    for (const item of cart) {
+      productQuantities.push({
+        productId: item._id,
+        quantity: item.quantity,
+      });
+    }
+
+    const paymentData = {
+      nonce,
+      cart,
+      productQuantities, // Include the product quantities in the request
+    };
+
+    const { data } = await axios.post(
+      "/api/v1/product/braintree/payment",
+      paymentData
+    );
+
+    // After processing the payment, update the product quantities
+    for (const quantityData of productQuantities) {
+      const { productId, quantity } = quantityData;
+
+      const response = await fetch(`/api/v1/product/updateQuantity/${productId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ itemQuantity: quantity }), // Send the new quantity as a number
+      });
+
+      if (!response.ok) {
+        // Handle errors if necessary
+        console.error(`Error updating quantity for product ID ${productId}`);
+      }
+    }
+
+    setLoading(false);
+    localStorage.removeItem("cart");
+    setCart([]);
+    navigate("/dashboard/user/orders");
+    toast.success("Payment Completed Successfully ");
+  }
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    setLoading(false);
+  }
+};
 
 
   return (
@@ -186,13 +284,13 @@ const CartPage = () => {
                       src={`/api/v1/product/product-photo/${p._id}`}
                       className="card-img-top"
                       alt={p.name}
-                      width="100%"
-                      height={"150px"}
+                      width="90%"
+                      height={"140px"}
                     />
                   </div>
                   <div className="col">
                     <p>{p.name}</p>
-                    <p>{p.description.substring(0, 30)}</p>
+                    {/* <p>{p.description.substring(0, 30)}</p> */}
                     <p>Price : {p.price}</p>
                   </div>
                   <div className="col cart-remove-btn">
@@ -278,14 +376,29 @@ const CartPage = () => {
                       }}
                       onInstance={(instance) => setInstance(instance)}
                     />
-                    
+
+                    <div>
+                    <button
+                      className="btn btn-primary"
+                      onClick={handlePayment}
+                      disabled={loading || !instance || !auth?.user?.address}
+                    >
+                      {loading ? "Processing ...." : "Make Payment"}
+                    </button> 
+                    </div>
+
+                    <div style={{marginTop: "10px"}}>
                     <button
                       className="btn btn-info"
                       onClick={khaltiPayment}
                       disabled={loading || !instance || !auth?.user?.address}
+                      style={{marginBottom: "10px"}}
                     >
                       {loading ? "Processing ...." : "Pay with Khalti"}
                     </button>
+                    </div>
+                    
+          
                   </>
                 )}
               </div>
